@@ -1,39 +1,77 @@
-from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.tools import DuckDuckGoSearchRun
+
+
+# Initialize search tool
+search = DuckDuckGoSearchRun()
 
 
 def external_agent(query: str, llm):
 
-    print("External agent called")
+    print("External agent (Web Search) called")
 
-    urls = [
-        "https://www.fao.org/home/en",
-        "https://www.icar.org.in/",
-    ]
+    # -----------------------------
+    # 🔍 STEP 1: SEARCH WEB
+    # -----------------------------
+    try:
+        search_results = search.run(query)
+    except Exception as e:
+        return f"Web search failed: {str(e)}"
 
-    docs = []
+    if not search_results:
+        return "No web data found."
 
-    for url in urls:
-        loader = WebBaseLoader(url)
-        docs.extend(loader.load())
+    # Limit content size (important)
+    content = search_results[:2000]
 
-    if not docs:
-        return "No external data found."
+    # -----------------------------
+    # 🔥 STEP 2: DYNAMIC PROMPT (NO FIXED FORMAT)
+    # -----------------------------
+    q = query.lower()
 
-    content = docs[0].page_content[:2000]
+    if any(word in q for word in ["price", "rate", "cost", "market"]):
 
-    # LLM Summarization
-    prompt = f"""
-Summarize the following farming information for a farmer.
+        prompt = f"""
+You are an agriculture expert.
 
-Farmer question:
+Give the latest price clearly.
+
+Question:
 {query}
 
-Information:
+Web Data:
 {content}
 
-Give a short, clear farming answer.
+Rules:
+- Give direct answer
+- Mention price range if available
+- Keep it short
+- No Cause/Solution format
 """
 
+    else:
+
+        prompt = f"""
+You are an agriculture expert.
+
+Answer clearly using the web information.
+
+Question:
+{query}
+
+Web Data:
+{content}
+
+Rules:
+- Be accurate and concise
+- Use only relevant information
+- Do NOT include thinking
+"""
+
+    # -----------------------------
+    # 🤖 STEP 3: LLM RESPONSE
+    # -----------------------------
     response = llm.invoke(prompt)
 
-    return response.content
+    answer = response.content.split("</think>")[-1].strip()
+
+    return answer

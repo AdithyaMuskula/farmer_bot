@@ -12,8 +12,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Index
+# Index / Vector DB (large binary files - rebuild with rag.py)
 faiss_index/
+splits.pkl
+
+# Local SQLite database
+farmer.db
+
+# Node modules
+node_modules/
 
 # OS files
 .DS_Store

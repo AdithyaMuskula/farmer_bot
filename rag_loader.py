@@ -7,12 +7,15 @@ from langchain_community.retrievers import BM25Retriever
 
 
 # -----------------------------
-# LOAD FAISS
+# LOAD EMBEDDINGS
 # -----------------------------
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
+# -----------------------------
+# LOAD FAISS (VECTOR)
+# -----------------------------
 db = FAISS.load_local(
     "faiss_index",
     embeddings,
@@ -33,7 +36,7 @@ bm25.k = 5
 
 
 # -----------------------------
-# HYBRID FUNCTION
+# 🔥 HYBRID SEARCH FUNCTION
 # -----------------------------
 def hybrid_search(query):
 
