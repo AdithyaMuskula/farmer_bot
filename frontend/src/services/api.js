@@ -4,7 +4,7 @@
 // Automatically handles 401 → clears token → redirects to login
 // ─────────────────────────────────────────────
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 // Helper: build auth header
 const authHeader = (token) => ({

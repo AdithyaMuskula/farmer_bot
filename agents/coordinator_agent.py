@@ -29,10 +29,10 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY_1"))
 # MCP CLIENT (IMPORTANT 🔥)
 # -----------------------------
 def call_mcp(tool, query):
-
+    mcp_url = os.getenv("MCP_SERVER_URL", "http://localhost:8001")
     try:
         res = requests.post(
-            "http://localhost:8001/mcp",
+            f"{mcp_url}/mcp",
             json={
                 "tool": tool,
                 "input": query

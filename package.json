@@ -1,0 +1,9 @@
+{
+  "name": "farmer-ai-bot-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-frontend": "npm install --prefix frontend",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend"
+  }
+}
